@@ -14,12 +14,13 @@ The package can be set up (ideally in a fresh virtual environment) for local
 development with the following::
 
     $ git clone https://github.com/epfl-lts2/pygsp.git
-    $ pip install --upgrade --editable pygsp[dev]
+    $ cd pygsp
+    $ make install
 
-The ``dev`` "extras requirement" ensures that dependencies required for
-development (to run the test suite and build the documentation) are installed.
-Only `graph-tool <https://graph-tool.skewed.de>`_ will be missing: install it
-manually as it cannot be installed by pip.
+The ``make install`` command (which runs ``uv sync --all-extras``) ensures that
+all dependencies required for development (to run the test suite and build the
+documentation) are installed. Only `graph-tool <https://graph-tool.skewed.de>`_
+will be missing: install it manually as it cannot be installed by uv.
 
 You can improve or add functionality in the ``pygsp`` folder, along with
 corresponding unit tests in ``pygsp/tests/test_*.py`` (with reasonable
@@ -31,7 +32,7 @@ short example in ``examples``.
 Update ``README.rst`` and ``CHANGELOG.rst`` if applicable.
 
 After making any change, please check the style, run the tests, and build the
-documentation with the following (enforced by Travis CI)::
+documentation with the following (enforced by GitHub Actions)::
 
     $ make lint
     $ make test
@@ -43,9 +44,9 @@ tests reasonably cover the changes you've introduced.
 To iterate faster, you can partially run the test suite, at various degrees of
 granularity, as follows::
 
-   $ python -m unittest pygsp.tests.test_docstrings.suite_reference
-   $ python -m unittest pygsp.tests.test_graphs.TestImportExport
-   $ python -m unittest pygsp.tests.test_graphs.TestImportExport.test_save_load
+   $ python -m pytest pygsp/tests/test_docstrings.py
+   $ python -m pytest pygsp/tests/test_graphs.py::TestGraphs
+   $ python -m pytest pygsp/tests/test_graphs.py::test_save_load
 
 Making a release
 ----------------
@@ -63,7 +64,7 @@ Making a release
    binary wheel should be found as ``dist/PyGSP-0.5.0-py2.py3-none-any.whl``.
 #. Test the upload and installation process::
 
-    $ twine upload --repository-url https://test.pypi.org/legacy/ dist/*
+    $ uv publish --publish-url https://test.pypi.org/legacy/ dist/*
     $ pip install --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple pygsp
 
    Log in as the LTS2 user.
@@ -82,7 +83,7 @@ Repository organization
   Makefile            Targets for make
   setup.py            Meta information about package (published on PyPI)
   .gitignore          Files ignored by the git revision control system
-  .travis.yml         Defines testing on Travis continuous integration
+  .github/workflows/  Defines testing on GitHub Actions continuous integration
 
   pygsp/              Contains the modules (the actual toolbox implementation)
    __init.py__        Load modules at package import
